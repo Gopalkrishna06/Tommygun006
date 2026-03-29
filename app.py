@@ -64,5 +64,10 @@ def generate_signal():
     print(f"Signal sent: {action} {direction}")
 
 if __name__ == "__main__":
-    send_telegram("✅ <b>Bot is working! Ready for Monday market!</b>")
+    import os
+    token = os.environ.get("BOT_TOKEN")
+    chat = os.environ.get("CHAT_ID")
+    print(f"Token found: {bool(token)}")
+    print(f"Chat found: {bool(chat)}")
+    send_telegram("✅ Bot test message!")
     generate_signal()
