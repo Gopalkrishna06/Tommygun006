@@ -64,4 +64,5 @@ def generate_signal():
     print(f"Signal sent: {action} {direction}")
 
 if __name__ == "__main__":
+    send_telegram("✅ <b>Bot is working! Ready for Monday market!</b>")
     generate_signal()
