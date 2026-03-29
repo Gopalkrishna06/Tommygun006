@@ -46,7 +46,6 @@ def generate_signal():
         direction = "PE 📉 (BEARISH)"
         action    = "BUY"
     else:
-        send_telegram(f"⏳ <b>No clear signal</b> at {now}\nNifty LTP: {ltp}")
         return
 
     msg = f"""
@@ -64,10 +63,5 @@ def generate_signal():
     print(f"Signal sent: {action} {direction}")
 
 if __name__ == "__main__":
-    import os
-    token = os.environ.get("BOT_TOKEN")
-    chat = os.environ.get("CHAT_ID")
-    print(f"Token found: {bool(token)}")
-    print(f"Chat found: {bool(chat)}")
-    send_telegram("✅ Bot test message!")
     generate_signal()
+    
