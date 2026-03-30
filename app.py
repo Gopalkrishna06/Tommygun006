@@ -2,6 +2,7 @@ import requests
 import yfinance as yf
 import os
 from datetime import datetime
+import pytz
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID   = os.environ.get("CHAT_ID")
@@ -37,7 +38,8 @@ def generate_signal():
     rsi, macd, signal_line, ltp = calculate_signals(df)
     ltp    = round(ltp, 2)
     strike = round(ltp / 50) * 50
-    now    = datetime.now().strftime("%d-%b-%Y %H:%M")
+    IST = pytz.timezone("Asia/Kolkata")
+now = datetime.now(IST).strftime("%d-%b-%Y %H:%M IST")
 
     if rsi < 40 and macd > signal_line:
         direction = "CE 📈 (BULLISH)"
