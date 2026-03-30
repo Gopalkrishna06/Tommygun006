@@ -1,12 +1,13 @@
 import requests
 import yfinance as yf
 import os
-from datetime import datetime
 import pytz
+from datetime import datetime
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID   = os.environ.get("CHAT_ID")
 SYMBOL    = "^NSEI"
+IST       = pytz.timezone("Asia/Kolkata")
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
@@ -17,15 +18,15 @@ def get_nifty_data():
     return df
 
 def calculate_signals(df):
-    close = df["Close"].squeeze()
-    delta = close.diff()
-    gain  = delta.clip(lower=0).rolling(14).mean()
-    loss  = (-delta.clip(upper=0)).rolling(14).mean()
-    rs    = gain / loss
-    rsi   = 100 - (100 / (1 + rs))
-    ema12 = close.ewm(span=12).mean()
-    ema26 = close.ewm(span=26).mean()
-    macd  = ema12 - ema26
+    close      = df["Close"].squeeze()
+    delta      = close.diff()
+    gain       = delta.clip(lower=0).rolling(14).mean()
+    loss       = (-delta.clip(upper=0)).rolling(14).mean()
+    rs         = gain / loss
+    rsi        = 100 - (100 / (1 + rs))
+    ema12      = close.ewm(span=12).mean()
+    ema26      = close.ewm(span=26).mean()
+    macd       = ema12 - ema26
     signal_line = macd.ewm(span=9).mean()
     rsi_val    = float(rsi.iloc[-1])
     macd_val   = float(macd.iloc[-1])
@@ -38,8 +39,7 @@ def generate_signal():
     rsi, macd, signal_line, ltp = calculate_signals(df)
     ltp    = round(ltp, 2)
     strike = round(ltp / 50) * 50
-    IST = pytz.timezone("Asia/Kolkata")
-now = datetime.now(IST).strftime("%d-%b-%Y %H:%M IST")
+    now    = datetime.now(IST).strftime("%d-%b-%Y %H:%M IST")
 
     if rsi < 40 and macd > signal_line:
         direction = "CE 📈 (BULLISH)"
@@ -66,4 +66,3 @@ now = datetime.now(IST).strftime("%d-%b-%Y %H:%M IST")
 
 if __name__ == "__main__":
     generate_signal()
-    
