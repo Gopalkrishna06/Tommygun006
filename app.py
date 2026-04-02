@@ -35,15 +35,18 @@ def calculate_signals(df):
     macd = ema12 - ema26
     signal_line = macd.ewm(span=9).mean()
     
-    atr = df["High"].rolling(14).max() - df["Low"].rolling(14).min()
-    upper = (df["High"] + df["Low"]) / 2 + (2 * atr)
-    lower = (df["High"] + df["Low"]) / 2 - (2 * atr)
+    atr = (df["High"] - df["Low"]).rolling(14).mean()
+    hl2 = (df["High"] + df["Low"]) / 2
+    upper = hl2 + (2 * atr)
+    lower = hl2 - (2 * atr)
     supertrend = []
     for i in range(len(df)):
         if i == 0:
             supertrend.append(None)
             continue
-        if df["Close"].iloc[i-1] <= upper.iloc[i-1]:
+        prev_close = df["Close"].iloc[i-1]
+        prev_upper = upper.iloc[i-1]
+        if prev_close <= prev_upper:
             supertrend.append(upper.iloc[i])
         else:
             supertrend.append(lower.iloc[i])
