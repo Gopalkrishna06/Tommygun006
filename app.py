@@ -38,14 +38,18 @@ def calculate_signals(df):
     atr = df["High"].rolling(14).max() - df["Low"].rolling(14).min()
     upper = (df["High"] + df["Low"]) / 2 + (2 * atr)
     lower = (df["High"] + df["Low"]) / 2 - (2 * atr)
-    supertrend = pd.Series([None]*len(df))
-    for i in range(1, len(df)):
+    supertrend = []
+    for i in range(len(df)):
+        if i == 0:
+            supertrend.append(None)
+            continue
         if df["Close"].iloc[i-1] <= upper.iloc[i-1]:
-            supertrend.iloc[i] = upper.iloc[i]
+            supertrend.append(upper.iloc[i])
         else:
-            supertrend.iloc[i] = lower.iloc[i]
+            supertrend.append(lower.iloc[i])
+    df['Supertrend'] = supertrend
     
-    return rsi.iloc[-1], macd.iloc[-1], signal_line.iloc[-1], supertrend.iloc[-1], df["Close"].iloc[-1]
+    return rsi.iloc[-1], macd.iloc[-1], signal_line.iloc[-1], df['Supertrend'].iloc[-1], df["Close"].iloc[-1]
 
 def generate_signal():
     df = get_nifty_data()
